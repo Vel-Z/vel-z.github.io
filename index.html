@@ -18,8 +18,8 @@
       padding: 1rem;
       text-align: center;
     }
-    h1 {
-      margin: 0;
+    header img {
+      height: 60px;
     }
     .products {
       display: grid;
@@ -51,6 +51,32 @@
     .btn:hover {
       background: #444;
     }
+    form {
+      background: white;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      max-width: 500px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    form input, form textarea {
+      width: 100%;
+      padding: 0.7rem;
+      margin: 0.5rem 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    form button {
+      background: #111;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.2rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    form button:hover {
+      background: #444;
+    }
     footer {
       text-align: center;
       padding: 1rem;
@@ -62,33 +88,34 @@
 </head>
 <body>
   <header>
+    <img src="https://drive.google.com/uc?export=view&id=1CJnIuLOsHU3Je1IHm3Ky1-yvHWOEJRBB" alt="Vel-Z Logo">
     <h1>Welcome to Vel-Z Store</h1>
     <p>Quality products at your fingertips</p>
   </header>
 
   <section class="products">
+    <!-- Product structure only, no details -->
     <div class="card">
-      <img src="https://via.placeholder.com/250" alt="Product 1" />
-      <h3>Product 1</h3>
-      <p>$10</p>
-      <a href="mailto:YOUR-EMAIL@gmail.com?subject=Order%20Product%201" class="btn">Order Now</a>
+      <img src="https://via.placeholder.com/250" alt="Product Image" />
+      <h3>Product Name</h3>
+      <p>Price</p>
+      <a href="https://wa.me/923219624746" class="btn">Order via WhatsApp</a>
     </div>
-    <div class="card">
-      <img src="https://via.placeholder.com/250" alt="Product 2" />
-      <h3>Product 2</h3>
-      <p>$15</p>
-      <a href="mailto:YOUR-EMAIL@gmail.com?subject=Order%20Product%202" class="btn">Order Now</a>
-    </div>
-    <div class="card">
-      <img src="https://via.placeholder.com/250" alt="Product 3" />
-      <h3>Product 3</h3>
-      <p>$20</p>
-      <a href="mailto:sheikhmoeez.280@gmail.com?subject=Order%20Product%203" class="btn">Order Now</a>
-    </div>
+  </section>
+
+  <section>
+    <form action="https://formspree.io/f/mnqepbyk" method="POST">
+      <h2>Order Form</h2>
+      <input type="text" name="name" placeholder="Your Name" required>
+      <input type="email" name="email" placeholder="Your Email" required>
+      <textarea name="message" placeholder="Your Order Details" required></textarea>
+      <button type="submit">Send Order</button>
+    </form>
   </section>
 
   <footer>
     <p>© 2025 Vel-Z Store | All Rights Reserved</p>
+    <p>📧 sheikhmoeez.280@gmail.com | 📱 +92 321 9624746</p>
   </footer>
 </body>
 </html>
