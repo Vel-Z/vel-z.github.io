@@ -1,121 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vel-Z Store</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f9f9f9;
-      color: #333;
-    }
-    header {
-      background: #111;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-    }
-    header img {
-      height: 60px;
-    }
-    .products {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-      padding: 1rem;
-    }
-    .card {
-      background: white;
-      border-radius: 10px;
-      padding: 1rem;
-      text-align: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .card img {
-      max-width: 100%;
-      border-radius: 8px;
-    }
-    .btn {
-      display: inline-block;
-      margin-top: 0.5rem;
-      padding: 0.5rem 1rem;
-      background: #111;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      text-decoration: none;
-    }
-    .btn:hover {
-      background: #444;
-    }
-    form {
-      background: white;
-      margin: 2rem auto;
-      padding: 1.5rem;
-      max-width: 500px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    form input, form textarea {
-      width: 100%;
-      padding: 0.7rem;
-      margin: 0.5rem 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    form button {
-      background: #111;
-      color: white;
-      border: none;
-      padding: 0.7rem 1.2rem;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    form button:hover {
-      background: #444;
-    }
-    footer {
-      text-align: center;
-      padding: 1rem;
-      background: #111;
-      color: white;
-      margin-top: 2rem;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapid-Fire Fun Choices Game</title>
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #f0f4c3, #ffe0b2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    margin:0;
+    padding:20px;
+}
+h1 { color:#333; margin-bottom:20px; text-align:center; font-size:32px; text-shadow:2px 2px #fff;}
+button { padding:12px 25px; margin:10px; background:#f57c00; color:#fff; border:none; border-radius:10px; cursor:pointer; transition:all 0.3s; font-size:18px; font-weight:bold;}
+button:hover { background:#e65100; transform:scale(1.05);}
+#timer { font-size:28px; font-weight:bold; color:#d32f2f; margin-bottom:25px; text-shadow:1px 1px #fff;}
+.choice-container { display:flex; gap:50px; flex-wrap:wrap; justify-content:center; margin-bottom:20px;}
+.choice-card { width:260px; background:linear-gradient(135deg,#ffecb3,#ffe0b2); border-radius:20px; padding:25px; text-align:center;
+    box-shadow:0 10px 25px rgba(0,0,0,0.3); cursor:pointer; transition:all 0.3s; font-size:18px; font-weight:bold; color:#333; text-shadow:1px 1px #fff;}
+.choice-card:hover { transform:translateY(-8px) scale(1.05); box-shadow:0 15px 30px rgba(0,0,0,0.4);}
+#scoreboard { margin-top:20px; font-size:20px; color:#333; font-weight:bold;}
+#home { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:60vh;}
+</style>
 </head>
 <body>
-  <header>
-    <img src="https://drive.google.com/uc?export=view&id=1CJnIuLOsHU3Je1IHm3Ky1-yvHWOEJRBB" alt="Vel-Z Logo">
-    <h1>Welcome to Vel-Z Store</h1>
-    <p>Quality products at your fingertips</p>
-  </header>
 
-  <section class="products">
-    <!-- Product structure only, no details -->
-    <div class="card">
-      <img src="https://via.placeholder.com/250" alt="Product Image" />
-      <h3>Product Name</h3>
-      <p>Price</p>
-      <a href="https://wa.me/923219624746" class="btn">Order via WhatsApp</a>
-    </div>
-  </section>
+<div id="home">
+<h1>Rapid-Fire Fun Choices Game</h1>
+<p>Select Time Mode:</p>
+<button class="time-btn" data-time="60">1 Minute</button>
+<button class="time-btn" data-time="120">2 Minutes</button>
+<button class="time-btn" data-time="300">5 Minutes</button>
+<button class="time-btn" data-time="0">Infinite</button>
+</div>
 
-  <section>
-    <form action="https://formspree.io/f/mnqepbyk" method="POST">
-      <h2>Order Form</h2>
-      <input type="text" name="name" placeholder="Your Name" required>
-      <input type="email" name="email" placeholder="Your Email" required>
-      <textarea name="message" placeholder="Your Order Details" required></textarea>
-      <button type="submit">Send Order</button>
-    </form>
-  </section>
+<div id="game" style="display:none;">
+<div id="timer">60</div>
+<div class="choice-container">
+    <div class="choice-card" id="choice1"><div class="choice-text">--</div></div>
+    <div class="choice-card" id="choice2"><div class="choice-text">--</div></div>
+</div>
+<div id="scoreboard">Score: 0 | Record: 0</div>
+<button id="back-home">Back to Home</button>
+</div>
 
-  <footer>
-    <p>© 2025 Vel-Z Store | All Rights Reserved</p>
-    <p>📧 sheikhmoeez.280@gmail.com | 📱 +92 321 9624746</p>
-  </footer>
+<script>
+// 100+ fun questions array
+const questions = [
+["Be able to fly","Be able to lift a car"],
+["Become invisible","Super speed"],
+["Teleport anywhere","Read minds"],
+["Talk to animals","Control the weather"],
+["Time travel","Shape shift"],
+["Unlimited money","Unlimited knowledge"],
+["Eat anything without getting fat","Never sleep again"],
+["Breath underwater","Survive in space"],
+["Instantly learn any skill","Always win games"],
+["Control fire","Control water"],
+["Speak all languages","Speak with aliens"],
+["Walk through walls","Run at light speed"],
+["Be a master chef","Be a master musician"],
+["Always have perfect memory","Forget nothing ever"],
+["Have perfect aim","Never get hurt"],
+["Talk to plants","Talk to ghosts"],
+["Control the day","Control the night"],
+["Be super strong","Be super fast"],
+["Always know the truth","Always be lucky"],
+["Make anything you touch gold","Make anything you touch vanish"],
+["Live forever","Rewind time once a day"],
+["See the future","Change the past"],
+["Summon any animal","Become any animal"],
+["Always find lost things","Always win arguments"],
+["Breathe in space","Breathe underwater"],
+["Never need food","Never need sleep"],
+["Turn invisible at will","Fly at will"],
+["Have a personal robot","Have a personal spaceship"],
+["Control ice","Control lightning"],
+["Be able to speak with machines","Be able to speak with animals"],
+["Teleport with thought","Change appearance at will"],
+["Always know where people are","Always know when someone lies"],
+["Have a pocket dimension","Have a magic backpack"],
+["Have a super computer in your mind","Have a clone of yourself"],
+["Be a master of any game instantly","Be a master of all sports"],
+["Always find shortcuts","Always have the best ideas"],
+["Become tiny","Become gigantic"],
+["Walk on water","Walk through fire"],
+["Breathe fire","Breathe water"],
+["See through walls","See through illusions"],
+["Be able to stop time","Be able to rewind time"],
+["Have a magic pen","Have a magic notebook"],
+["Always have energy","Always be calm"],
+["Be able to predict weather","Be able to predict luck"],
+["Control wind","Control earth"],
+["Be able to talk to fish","Be able to talk to birds"],
+["Be able to multiply objects","Be able to shrink objects"],
+["Always be first","Always be second but fastest"],
+["Make plants grow instantly","Make machines work instantly"],
+["Turn anything into candy","Turn anything into chocolate"],
+["Be able to create portals","Be able to create force fields"],
+["Have super hearing","Have super vision"],
+["Be able to read minds","Be able to communicate telepathically"],
+["Have perfect style","Have perfect charisma"],
+["Be able to mimic voices","Be able to mimic appearances"],
+["Always have the right answer","Always find hidden treasures"],
+["Control dreams","Control reality"],
+["Have super reflexes","Have super endurance"],
+["Be able to swim like a shark","Be able to fly like an eagle"],
+["Talk to insects","Talk to birds"],
+["Be able to heal others instantly","Be able to heal yourself instantly"],
+["Make it always sunny","Make it always rain"],
+["Become invisible in shadows","Become visible in bright light"],
+["Always know the path","Always know the safe way"],
+["Be a genius in math","Be a genius in science"],
+["Be able to stop aging","Be able to reverse aging"],
+["Have perfect balance","Have perfect coordination"],
+["Always have the perfect timing","Always say the perfect word"],
+["Turn anything into a tool","Turn anything into a vehicle"],
+["Be able to read books instantly","Be able to learn from videos instantly"],
+["Always win at cards","Always win at sports"],
+["Have a personal teleport","Have a personal time machine"],
+["Be able to create illusions","Be able to create clones"],
+["Always be unnoticed","Always be admired"],
+["Be able to jump super high","Be able to run super fast"],
+["Have unlimited gadgets","Have unlimited costumes"],
+["Always know your friends location","Always know enemies plans"],
+["Be able to pause objects","Be able to reverse objects"],
+["Always find the perfect gift","Always find lost items"],
+["Be able to communicate with computers","Be able to communicate with aliens"],
+["Turn invisible when needed","Become invincible for a few seconds"],
+["Be able to freeze time","Be able to speed up time"],
+["Always find food","Always find shelter"],
+["Be able to summon lightning","Be able to summon wind"],
+["Have a magic vehicle","Have a magic pet"],
+["Always be confident","Always be charming"],
+["Turn anything into gold","Turn anything into diamond"],
+["Be able to see ghosts","Be able to see auras"],
+["Have super accuracy","Have super speed"],
+["Be able to multiply","Be able to divide instantly"]
+];
+
+let usedQuestions = [];
+let timer = 60;
+let interval = null;
+let score = 0;
+let record = localStorage.getItem("funChoiceRecord") || 0;
+
+const choice1 = document.getElementById('choice1');
+const choice2 = document.getElementById('choice2');
+const choice1Text = choice1.querySelector('.choice-text');
+const choice2Text = choice2.querySelector('.choice-text');
+const timerEl = document.getElementById('timer');
+const scoreboard = document.getElementById('scoreboard');
+const home = document.getElementById('home');
+const game = document.getElementById('game');
+const backHomeBtn = document.getElementById('back-home');
+
+function startGame(selectedTime){
+    usedQuestions = [];
+    score = 0;
+    timer = selectedTime;
+    updateTimer();
+    nextQuestion();
+    scoreboard.textContent = `Score: ${score} | Record: ${record}`;
+    home.style.display="none";
+    game.style.display="flex";
+
+    if(interval) clearInterval(interval);
+    if(selectedTime > 0){
+        interval = setInterval(()=>{
+            timer--;
+            updateTimer();
+            if(timer<=0){
+                clearInterval(interval);
+                endGame();
+            }
+        },1000);
+    } else { // infinite mode timer counts
+        interval = setInterval(()=>{
+            timer++;
+            updateTimer();
+        },1000);
+    }
+}
+
+function updateTimer(){
+    timerEl.textContent = timer + (timer===0?"":" sec");
+}
+
+function nextQuestion(){
+    if(usedQuestions.length === questions.length){
+        usedQuestions = [];
+    }
+    let idx;
+    do { idx = Math.floor(Math.random()*questions.length); } while(usedQuestions.includes(idx));
+    usedQuestions.push(idx);
+    choice1Text.textContent = questions[idx][0];
+    choice2Text.textContent = questions[idx][1];
+}
+
+function selectChoice(){
+    score++;
+    if(score > record){
+        record = score;
+        localStorage.setItem("funChoiceRecord",record);
+    }
+    scoreboard.textContent = `Score: ${score} | Record: ${record}`;
+    nextQuestion();
+}
+
+choice1.addEventListener('click', selectChoice);
+choice2.addEventListener('click', selectChoice);
+backHomeBtn.addEventListener('click',()=>{
+    if(interval) clearInterval(interval);
+    home.style.display="flex";
+    game.style.display="none";
+});
+
+document.querySelectorAll('.time-btn').forEach(btn=>{
+    btn.addEventListener('click',()=> startGame(parseInt(btn.getAttribute('data-time'))));
+});
+</script>
+
 </body>
 </html>
