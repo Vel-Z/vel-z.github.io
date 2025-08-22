@@ -1,229 +1,126 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rapid-Fire Fun Choices Game</title>
-<style>
-body {
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #f0f4c3, #ffe0b2);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    margin:0;
-    padding:20px;
-}
-h1 { color:#333; margin-bottom:20px; text-align:center; font-size:32px; text-shadow:2px 2px #fff;}
-button { padding:12px 25px; margin:10px; background:#f57c00; color:#fff; border:none; border-radius:10px; cursor:pointer; transition:all 0.3s; font-size:18px; font-weight:bold;}
-button:hover { background:#e65100; transform:scale(1.05);}
-#timer { font-size:28px; font-weight:bold; color:#d32f2f; margin-bottom:25px; text-shadow:1px 1px #fff;}
-.choice-container { display:flex; gap:50px; flex-wrap:wrap; justify-content:center; margin-bottom:20px;}
-.choice-card { width:260px; background:linear-gradient(135deg,#ffecb3,#ffe0b2); border-radius:20px; padding:25px; text-align:center;
-    box-shadow:0 10px 25px rgba(0,0,0,0.3); cursor:pointer; transition:all 0.3s; font-size:18px; font-weight:bold; color:#333; text-shadow:1px 1px #fff;}
-.choice-card:hover { transform:translateY(-8px) scale(1.05); box-shadow:0 15px 30px rgba(0,0,0,0.4);}
-#scoreboard { margin-top:20px; font-size:20px; color:#333; font-weight:bold;}
-#home { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:60vh;}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vel-Z AI</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    header {
+      padding: 1rem;
+      background: #1e293b;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .msg {
+      padding: 0.75rem 1rem;
+      border-radius: 1rem;
+      max-width: 75%;
+      line-height: 1.4;
+    }
+    .user {
+      align-self: flex-end;
+      background: #3b82f6;
+      color: white;
+    }
+    .bot {
+      align-self: flex-start;
+      background: #334155;
+      color: #f8fafc;
+    }
+    #input-area {
+      display: flex;
+      padding: 0.75rem;
+      background: #1e293b;
+      gap: 0.5rem;
+    }
+    #msg-input {
+      flex: 1;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+    }
+    button {
+      padding: 0.75rem 1rem;
+      border: none;
+      border-radius: 0.5rem;
+      background: #3b82f6;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #2563eb;
+    }
+  </style>
 </head>
 <body>
+  <header>Vel-Z AI</header>
+  <div id="chat"></div>
+  <div id="input-area">
+    <input id="msg-input" type="text" placeholder="Type your message..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>  <script>
+    const chat = document.getElementById("chat");
+    const input = document.getElementById("msg-input");
+    const API_KEY = "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";
 
-<div id="home">
-<h1>Rapid-Fire Fun Choices Game</h1>
-<p>Select Time Mode:</p>
-<button class="time-btn" data-time="60">1 Minute</button>
-<button class="time-btn" data-time="120">2 Minutes</button>
-<button class="time-btn" data-time="300">5 Minutes</button>
-<button class="time-btn" data-time="0">Infinite</button>
-</div>
-
-<div id="game" style="display:none;">
-<div id="timer">60</div>
-<div class="choice-container">
-    <div class="choice-card" id="choice1"><div class="choice-text">--</div></div>
-    <div class="choice-card" id="choice2"><div class="choice-text">--</div></div>
-</div>
-<div id="scoreboard">Score: 0 | Record: 0</div>
-<button id="back-home">Back to Home</button>
-</div>
-
-<script>
-// 100+ fun questions array
-const questions = [
-["Be able to fly","Be able to lift a car"],
-["Become invisible","Super speed"],
-["Teleport anywhere","Read minds"],
-["Talk to animals","Control the weather"],
-["Time travel","Shape shift"],
-["Unlimited money","Unlimited knowledge"],
-["Eat anything without getting fat","Never sleep again"],
-["Breath underwater","Survive in space"],
-["Instantly learn any skill","Always win games"],
-["Control fire","Control water"],
-["Speak all languages","Speak with aliens"],
-["Walk through walls","Run at light speed"],
-["Be a master chef","Be a master musician"],
-["Always have perfect memory","Forget nothing ever"],
-["Have perfect aim","Never get hurt"],
-["Talk to plants","Talk to ghosts"],
-["Control the day","Control the night"],
-["Be super strong","Be super fast"],
-["Always know the truth","Always be lucky"],
-["Make anything you touch gold","Make anything you touch vanish"],
-["Live forever","Rewind time once a day"],
-["See the future","Change the past"],
-["Summon any animal","Become any animal"],
-["Always find lost things","Always win arguments"],
-["Breathe in space","Breathe underwater"],
-["Never need food","Never need sleep"],
-["Turn invisible at will","Fly at will"],
-["Have a personal robot","Have a personal spaceship"],
-["Control ice","Control lightning"],
-["Be able to speak with machines","Be able to speak with animals"],
-["Teleport with thought","Change appearance at will"],
-["Always know where people are","Always know when someone lies"],
-["Have a pocket dimension","Have a magic backpack"],
-["Have a super computer in your mind","Have a clone of yourself"],
-["Be a master of any game instantly","Be a master of all sports"],
-["Always find shortcuts","Always have the best ideas"],
-["Become tiny","Become gigantic"],
-["Walk on water","Walk through fire"],
-["Breathe fire","Breathe water"],
-["See through walls","See through illusions"],
-["Be able to stop time","Be able to rewind time"],
-["Have a magic pen","Have a magic notebook"],
-["Always have energy","Always be calm"],
-["Be able to predict weather","Be able to predict luck"],
-["Control wind","Control earth"],
-["Be able to talk to fish","Be able to talk to birds"],
-["Be able to multiply objects","Be able to shrink objects"],
-["Always be first","Always be second but fastest"],
-["Make plants grow instantly","Make machines work instantly"],
-["Turn anything into candy","Turn anything into chocolate"],
-["Be able to create portals","Be able to create force fields"],
-["Have super hearing","Have super vision"],
-["Be able to read minds","Be able to communicate telepathically"],
-["Have perfect style","Have perfect charisma"],
-["Be able to mimic voices","Be able to mimic appearances"],
-["Always have the right answer","Always find hidden treasures"],
-["Control dreams","Control reality"],
-["Have super reflexes","Have super endurance"],
-["Be able to swim like a shark","Be able to fly like an eagle"],
-["Talk to insects","Talk to birds"],
-["Be able to heal others instantly","Be able to heal yourself instantly"],
-["Make it always sunny","Make it always rain"],
-["Become invisible in shadows","Become visible in bright light"],
-["Always know the path","Always know the safe way"],
-["Be a genius in math","Be a genius in science"],
-["Be able to stop aging","Be able to reverse aging"],
-["Have perfect balance","Have perfect coordination"],
-["Always have the perfect timing","Always say the perfect word"],
-["Turn anything into a tool","Turn anything into a vehicle"],
-["Be able to read books instantly","Be able to learn from videos instantly"],
-["Always win at cards","Always win at sports"],
-["Have a personal teleport","Have a personal time machine"],
-["Be able to create illusions","Be able to create clones"],
-["Always be unnoticed","Always be admired"],
-["Be able to jump super high","Be able to run super fast"],
-["Have unlimited gadgets","Have unlimited costumes"],
-["Always know your friends location","Always know enemies plans"],
-["Be able to pause objects","Be able to reverse objects"],
-["Always find the perfect gift","Always find lost items"],
-["Be able to communicate with computers","Be able to communicate with aliens"],
-["Turn invisible when needed","Become invincible for a few seconds"],
-["Be able to freeze time","Be able to speed up time"],
-["Always find food","Always find shelter"],
-["Be able to summon lightning","Be able to summon wind"],
-["Have a magic vehicle","Have a magic pet"],
-["Always be confident","Always be charming"],
-["Turn anything into gold","Turn anything into diamond"],
-["Be able to see ghosts","Be able to see auras"],
-["Have super accuracy","Have super speed"],
-["Be able to multiply","Be able to divide instantly"]
-];
-
-let usedQuestions = [];
-let timer = 60;
-let interval = null;
-let score = 0;
-let record = localStorage.getItem("funChoiceRecord") || 0;
-
-const choice1 = document.getElementById('choice1');
-const choice2 = document.getElementById('choice2');
-const choice1Text = choice1.querySelector('.choice-text');
-const choice2Text = choice2.querySelector('.choice-text');
-const timerEl = document.getElementById('timer');
-const scoreboard = document.getElementById('scoreboard');
-const home = document.getElementById('home');
-const game = document.getElementById('game');
-const backHomeBtn = document.getElementById('back-home');
-
-function startGame(selectedTime){
-    usedQuestions = [];
-    score = 0;
-    timer = selectedTime;
-    updateTimer();
-    nextQuestion();
-    scoreboard.textContent = `Score: ${score} | Record: ${record}`;
-    home.style.display="none";
-    game.style.display="flex";
-
-    if(interval) clearInterval(interval);
-    if(selectedTime > 0){
-        interval = setInterval(()=>{
-            timer--;
-            updateTimer();
-            if(timer<=0){
-                clearInterval(interval);
-                endGame();
-            }
-        },1000);
-    } else { // infinite mode timer counts
-        interval = setInterval(()=>{
-            timer++;
-            updateTimer();
-        },1000);
+    function appendMessage(text, sender) {
+      const div = document.createElement("div");
+      div.className = `msg ${sender}`;
+      div.textContent = text;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
     }
-}
 
-function updateTimer(){
-    timerEl.textContent = timer + (timer===0?"":" sec");
-}
+    async function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+      appendMessage(text, "user");
+      input.value = "";
 
-function nextQuestion(){
-    if(usedQuestions.length === questions.length){
-        usedQuestions = [];
+      appendMessage("...", "bot");
+
+      try {
+        const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${API_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "deepseek/deepseek-r1:free",
+            messages: [{ role: "user", content: text }]
+          })
+        });
+        const data = await res.json();
+        const reply = data.choices?.[0]?.message?.content || "No response";
+        document.querySelector(".bot:last-child").textContent = reply;
+      } catch (e) {
+        document.querySelector(".bot:last-child").textContent = "Error: " + e.message;
+      }
     }
-    let idx;
-    do { idx = Math.floor(Math.random()*questions.length); } while(usedQuestions.includes(idx));
-    usedQuestions.push(idx);
-    choice1Text.textContent = questions[idx][0];
-    choice2Text.textContent = questions[idx][1];
-}
 
-function selectChoice(){
-    score++;
-    if(score > record){
-        record = score;
-        localStorage.setItem("funChoiceRecord",record);
-    }
-    scoreboard.textContent = `Score: ${score} | Record: ${record}`;
-    nextQuestion();
-}
-
-choice1.addEventListener('click', selectChoice);
-choice2.addEventListener('click', selectChoice);
-backHomeBtn.addEventListener('click',()=>{
-    if(interval) clearInterval(interval);
-    home.style.display="flex";
-    game.style.display="none";
-});
-
-document.querySelectorAll('.time-btn').forEach(btn=>{
-    btn.addEventListener('click',()=> startGame(parseInt(btn.getAttribute('data-time'))));
-});
-</script>
-
-</body>
+    input.addEventListener("keydown", e => {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script></body>
 </html>
