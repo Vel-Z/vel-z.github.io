@@ -1,4 +1,5 @@
-<!DOCTYPE html>  <html lang="en">  
+<!DOCTYPE html>  
+<html lang="en">  
 <head>  
 <meta charset="UTF-8">  
 <meta name="viewport" content="width=device-width, initial-scale=1.0">  
@@ -9,7 +10,9 @@
     margin: 0;   
     padding: 0;   
     -webkit-tap-highlight-color: transparent;  
-  }  body {
+  }  
+
+body {
 font-family: 'Inter', 'Roboto', sans-serif;
 height: 100vh;
 display: flex;
@@ -132,6 +135,15 @@ font-size: 1.5rem;
 .control-btn:active {
 background: #555;
 transform: scale(0.95);
+}
+
+/* Fullscreen button styling */
+#fullscreen {
+background: #444;
+}
+
+#fullscreen:hover {
+background: #555;
 }
 
 /* Compact settings panel */
@@ -294,7 +306,7 @@ font-size: 1.3rem;
 
 .controls {  
   height: 56px;  
-  width: 180px;  
+  width: 220px;  
 }  
   
 .clock {  
@@ -324,69 +336,91 @@ transform: rotate(180deg) scale(0.98);
 </style>
 
 </head>  
-<body>  <!-- Simple Splash -->  <div id="splash">Chess Clock</div>  <!-- Black Player (Top - Rotated) -->  <div id="player1" class="clock inactive">  
+<body>  
+<!-- Simple Splash -->  
+<div id="splash">Chess Clock</div>  
+
+<!-- Black Player (Top - Rotated) -->  
+<div id="player1" class="clock inactive">  
   <div class="player-label">White</div>  
   <div id="time1">05:00</div>  
   <div class="move-counter"><span id="moves1">0</span></div>  
-</div>  <!-- Center Control Bar -->  <div class="controls" id="controls">  
+</div>  
+
+<!-- Center Control Bar -->  
+<div class="controls" id="controls">  
   <button class="control-btn" id="toggle" title="Play/Pause">▶</button>  
   <button class="control-btn" id="reset" title="Reset">↻</button>  
+  <button class="control-btn" id="fullscreen" title="Fullscreen">⛶</button>
   <button class="control-btn" id="settings" title="Settings">⚙</button>  
-</div>  <!-- White Player (Bottom) -->  <div id="player2" class="clock inactive">  
+</div>  
+
+<!-- White Player (Bottom) -->  
+<div id="player2" class="clock inactive">  
   <div class="player-label">Black</div>  
   <div id="time2">05:00</div>  
   <div class="move-counter"><span id="moves2">0</span></div>  
-</div>  <!-- Compact Settings Panel -->  <div class="overlay" id="overlay">  
+</div>  
+
+<!-- Compact Settings Panel -->  
+<div class="overlay" id="overlay">  
   <div class="settings-panel">  
-    <div class="settings-title">Time Settings</div>  <div class="time-settings">  
-  <!-- Black Settings -->  
-  <div class="player-time">  
-    <h4>Black</h4>  
-    <div class="time-input">  
-      <label>Minutes</label>  
-      <input type="number" id="blackTime" value="5" min="1" max="180">  
-    </div>  
-    <div class="time-input">  
-      <label>Increment</label>  
-      <input type="number" id="blackInc" value="0" min="0" max="60">  
-    </div>  
-  </div>  
+    <div class="settings-title">Time Settings</div>  
     
-  <!-- White Settings -->  
-  <div class="player-time">  
-    <h4>White</h4>  
-    <div class="time-input">  
-      <label>Minutes</label>  
-      <input type="number" id="whiteTime" value="5" min="1" max="180">  
+    <div class="time-settings">  
+      <!-- Black Settings -->  
+      <div class="player-time">  
+        <h4>Black</h4>  
+        <div class="time-input">  
+          <label>Minutes</label>  
+          <input type="number" id="blackTime" value="5" min="1" max="180">  
+        </div>  
+        <div class="time-input">  
+          <label>Increment</label>  
+          <input type="number" id="blackInc" value="0" min="0" max="60">  
+        </div>  
+      </div>  
+        
+      <!-- White Settings -->  
+      <div class="player-time">  
+        <h4>White</h4>  
+        <div class="time-input">  
+          <label>Minutes</label>  
+          <input type="number" id="whiteTime" value="5" min="1" max="180">  
+        </div>  
+        <div class="time-input">  
+          <label>Increment</label>  
+          <input type="number" id="whiteInc" value="0" min="0" max="60">  
+        </div>  
+      </div>  
     </div>  
-    <div class="time-input">  
-      <label>Increment</label>  
-      <input type="number" id="whiteInc" value="0" min="0" max="60">  
+    
+    <!-- Presets -->  
+    <div style="text-align: center; margin-bottom: 10px; color: #ccc;">Quick Presets</div>  
+    <div class="preset-buttons">  
+      <button class="preset-btn" onclick="setPreset(1, 0)">1+0</button>  
+      <button class="preset-btn" onclick="setPreset(3, 0)">3+0</button>  
+      <button class="preset-btn" onclick="setPreset(3, 2)">3+2</button>  
+      <button class="preset-btn" onclick="setPreset(5, 0)">5+0</button>  
+      <button class="preset-btn" onclick="setPreset(10, 0)">10+0</button>  
+      <button class="preset-btn" onclick="setPreset(15, 10)">15+10</button>  
     </div>  
-  </div>  
-</div>  
-  
-<!-- Presets -->  
-<div style="text-align: center; margin-bottom: 10px; color: #ccc;">Quick Presets</div>  
-<div class="preset-buttons">  
-  <button class="preset-btn" onclick="setPreset(1, 0)">1+0</button>  
-  <button class="preset-btn" onclick="setPreset(3, 0)">3+0</button>  
-  <button class="preset-btn" onclick="setPreset(3, 2)">3+2</button>  
-  <button class="preset-btn" onclick="setPreset(5, 0)">5+0</button>  
-  <button class="preset-btn" onclick="setPreset(10, 0)">10+0</button>  
-  <button class="preset-btn" onclick="setPreset(15, 10)">15+10</button>  
-</div>  
-  
-<!-- Action Buttons -->  
-<div class="action-buttons">  
-  <button class="action-btn cancel-btn" id="cancelBtn">Cancel</button>  
-  <button class="action-btn save-btn" id="saveBtn">Save</button>  
-</div>
+    
+    <!-- Action Buttons -->  
+    <div class="action-buttons">  
+      <button class="action-btn cancel-btn" id="cancelBtn">Cancel</button>  
+      <button class="action-btn save-btn" id="saveBtn">Save</button>  
+    </div>
 
   </div>  
-</div>  <!-- Audio with proper 0.5s sound -->  <audio id="moveSound" preload="auto">  
+</div>  
+
+<!-- Audio with proper 0.5s sound -->  
+<audio id="moveSound" preload="auto">  
   <source src="data:audio/wav;base64,UklGRj4CAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YRoCAAC4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4" type="audio/wav">  
-</audio>  <script>  
+</audio>  
+
+<script>  
 // Game state  
 let blackTime = 300, whiteTime = 300;  
 let blackIncrement = 0, whiteIncrement = 0;  
@@ -404,7 +438,8 @@ const moves1El = document.getElementById('moves1');
 const moves2El = document.getElementById('moves2');  
 const overlay = document.getElementById('overlay');  
 const controlsEl = document.getElementById('controls');  
-const toggleBtn = document.getElementById('toggle');  
+const toggleBtn = document.getElementById('toggle');
+const fullscreenBtn = document.getElementById('fullscreen');  
   
 // Format time  
 function formatTime(seconds) {  
@@ -424,6 +459,64 @@ function updateDisplay() {
   player1El.classList.toggle('warning', blackTime <= 30 && activePlayer === 1);  
   player2El.classList.toggle('warning', whiteTime <= 30 && activePlayer === 2);  
 }  
+
+// Fullscreen functionality
+function toggleFullscreen() {
+  if (!document.fullscreenElement && 
+      !document.webkitFullscreenElement && 
+      !document.mozFullScreenElement && 
+      !document.msFullscreenElement) {
+    
+    // Enter fullscreen
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen();
+    } else if (document.documentElement.webkitRequestFullscreen) {
+      document.documentElement.webkitRequestFullscreen();
+    } else if (document.documentElement.mozRequestFullScreen) {
+      document.documentElement.mozRequestFullScreen();
+    } else if (document.documentElement.msRequestFullscreen) {
+      document.documentElement.msRequestFullscreen();
+    }
+    
+    fullscreenBtn.textContent = '⛶';
+    fullscreenBtn.title = 'Exit Fullscreen';
+    
+  } else {
+    // Exit fullscreen
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    }
+    
+    fullscreenBtn.textContent = '⛶';
+    fullscreenBtn.title = 'Fullscreen';
+  }
+}
+
+// Update fullscreen button on fullscreen change
+function updateFullscreenButton() {
+  if (document.fullscreenElement || 
+      document.webkitFullscreenElement || 
+      document.mozFullScreenElement || 
+      document.msFullscreenElement) {
+    fullscreenBtn.textContent = '⇱';
+    fullscreenBtn.title = 'Exit Fullscreen';
+  } else {
+    fullscreenBtn.textContent = '⛶';
+    fullscreenBtn.title = 'Fullscreen';
+  }
+}
+
+// Listen for fullscreen changes
+document.addEventListener('fullscreenchange', updateFullscreenButton);
+document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+document.addEventListener('mozfullscreenchange', updateFullscreenButton);
+document.addEventListener('msfullscreenchange', updateFullscreenButton);
   
 // Play 0.5s sound  
 function playMoveSound() {  
@@ -503,6 +596,9 @@ toggleBtn.addEventListener('click', () => {
     toggleBtn.textContent = '▶';  
   }  
 });  
+
+// Fullscreen button
+fullscreenBtn.addEventListener('click', toggleFullscreen);
   
 // Reset button  
 document.getElementById('reset').addEventListener('click', () => {  
@@ -594,12 +690,18 @@ player2El.addEventListener('touchstart', (e) => {
 player1El.addEventListener('click', () => handlePlayerTap(1));  
 player2El.addEventListener('click', () => handlePlayerTap(2));  
   
-// Spacebar shortcut  
+// Keyboard shortcuts  
 document.addEventListener('keydown', (e) => {  
   if (e.code === 'Space') {  
     e.preventDefault();  
     toggleBtn.click();  
-  }  
+  } else if (e.key === 'F11') {
+    e.preventDefault();
+    toggleFullscreen();
+  } else if (e.key === 'f' || e.key === 'F') {
+    e.preventDefault();
+    toggleFullscreen();
+  }
 });  
   
 // Close overlay on outside click  
@@ -616,5 +718,6 @@ updateDisplay();
 setTimeout(() => {  
   document.getElementById('splash').remove();  
 }, 2500);  
-</script>  </body>  
+</script>  
+</body>  
 </html>
