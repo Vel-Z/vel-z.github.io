@@ -1,63 +1,620 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vel-Z AI</title>
-  <style>
-    body { margin:0; font-family:Arial,sans-serif; background:#0f172a; color:#f8fafc; display:flex; flex-direction:column; height:100vh; }
-    header { padding:1rem; background:#1e293b; text-align:center; font-size:1.5rem; font-weight:bold; }
-    #chat { flex:1; overflow-y:auto; padding:1rem; display:flex; flex-direction:column; gap:0.5rem; }
-    .msg { padding:0.75rem 1rem; border-radius:1rem; max-width:75%; line-height:1.4; }
-    .user { align-self:flex-end; background:#3b82f6; color:white; }
-    .bot { align-self:flex-start; background:#334155; color:#f8fafc; }
-    #input-area { display:flex; padding:0.75rem; background:#1e293b; gap:0.5rem; }
-    #msg-input { flex:1; padding:0.75rem; border-radius:0.5rem; border:none; outline:none; font-size:1rem; }
-    button { padding:0.75rem 1rem; border:none; border-radius:0.5rem; background:#3b82f6; color:white; font-weight:bold; cursor:pointer; }
-    button:hover { background:#2563eb; }
-  </style>
-</head>
-<body>
-  <header>Vel-Z AI - Developed by Sheikh Moeez 😎</header>
-  <div id="chat"></div>
-  <div id="input-area">
-    <input id="msg-input" type="text" placeholder="Type your message..." />
-    <button onclick="sendMessage()">Send</button>
-  </div>
-  <script>
-    const chat = document.getElementById("chat");
-    const input = document.getElementById("msg-input");
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  
+<title>Chess Clock</title>  
+<style>  
+  * {   
+    box-sizing: border-box;   
+    margin: 0;   
+    padding: 0;   
+    -webkit-tap-highlight-color: transparent;  
+  }  body {
+font-family: 'Inter', 'Roboto', sans-serif;
+height: 100vh;
+display: flex;
+flex-direction: column;
+background: #1a1a1a;
+color: #fff;
+overflow: hidden;
+user-select: none;
+}
 
-    function appendMessage(text, sender) {
-      const div = document.createElement("div");
-      div.className = `msg ${sender}`;
-      div.textContent = text;
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
-    }
+/* Full screen clocks - chess.com style */
+.clock {
+flex: 1;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+font-size: clamp(4rem, 12vw, 8rem);
+font-weight: 700;
+cursor: pointer;
+transition: all 0.1s ease;
+width: 100%;
+position: relative;
+background: #2d2d2d;
+}
 
-    async function sendMessage() {
-      const text = input.value.trim();
-      if(!text) return;
-      appendMessage(text, "user");
-      input.value = "";
-      appendMessage("...", "bot");
+#player1 {
+transform: rotate(180deg);
+border-bottom: 2px solid #444;
+}
 
-      try {
-        const res = await fetch("/api/chat", {
-          method:"POST",
-          headers: { "Content-Type":"application/json" },
-          body: JSON.stringify({ message: text })
-        });
-        const data = await res.json();
-        const reply = data.choices?.[0]?.message?.content || "No response";
-        document.querySelector(".bot:last-child").textContent = reply;
-      } catch(e) {
-        document.querySelector(".bot:last-child").textContent = "Error: "+e.message;
-      }
-    }
+#player2 {
+border-top: 2px solid #444;
+}
 
-    input.addEventListener("keydown", e => { if(e.key==="Enter") sendMessage(); });
-  </script>
-</body>
+.active {
+background: #4CAF50 !important;
+color: #000;
+}
+
+.inactive {
+background: #2d2d2d;
+color: #fff;
+}
+
+.warning {
+background: #ff4444 !important;
+animation: blink 0.5s infinite alternate;
+}
+
+@keyframes blink {
+0% { opacity: 0.8; }
+100% { opacity: 1; }
+}
+
+/* Player labels - Black/White */
+.player-label {
+position: absolute;
+bottom: 20px;
+left: 20px;
+font-size: 1.2rem;
+font-weight: 600;
+opacity: 0.6;
+}
+
+/* Move counter */
+.move-counter {
+position: absolute;
+bottom: 20px;
+right: 20px;
+font-size: 1rem;
+opacity: 0.6;
+}
+
+/* Center control bar - starts small, expands on game start */
+.controls {
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 8px 20px;
+background: #1f1f1f;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+height: 60px;
+width: 200px;
+border-radius: 30px;
+border: 2px solid #444;
+z-index: 100;
+transition: all 0.3s ease;
+}
+
+.controls.expanded {
+width: 100%;
+border-radius: 0;
+left: 0;
+transform: translateY(-50%);
+border-left: none;
+border-right: none;
+}
+
+.control-btn {
+border: none;
+background: #333;
+color: white;
+cursor: pointer;
+transition: all 0.1s ease;
+border-radius: 8px;
+width: 48px;
+height: 48px;
+display: flex;
+align-items: center;
+justify-content: center;
+margin: 0 8px;
+border: 1px solid #555;
+font-size: 1.5rem;
+}
+
+.control-btn:active {
+background: #555;
+transform: scale(0.95);
+}
+
+/* Compact settings panel */
+.overlay {
+position: fixed;
+top: 0; left: 0;
+width: 100%; height: 100%;
+background: rgba(0,0,0,0.8);
+display: none;
+justify-content: center;
+align-items: center;
+z-index: 2000;
+}
+
+.settings-panel {
+background: #2d2d2d;
+padding: 25px;
+border-radius: 12px;
+width: 320px;
+border: 1px solid #444;
+}
+
+.settings-title {
+font-size: 1.5rem;
+margin-bottom: 20px;
+color: #fff;
+font-weight: 700;
+text-align: center;
+}
+
+.time-settings {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 20px;
+margin-bottom: 20px;
+}
+
+.player-time {
+background: #1f1f1f;
+padding: 15px;
+border-radius: 8px;
+border: 1px solid #444;
+}
+
+.player-time h4 {
+color: #4CAF50;
+margin-bottom: 12px;
+font-size: 1.1rem;
+text-align: center;
+}
+
+.time-input {
+display: flex;
+flex-direction: column;
+margin: 8px 0;
+}
+
+.time-input label {
+font-size: 0.9rem;
+color: #ccc;
+margin-bottom: 4px;
+}
+
+.time-input input {
+width: 100%;
+padding: 8px;
+border-radius: 6px;
+border: 1px solid #555;
+background: #333;
+color: white;
+font-size: 1rem;
+text-align: center;
+}
+
+.time-input input:focus {
+outline: none;
+border-color: #4CAF50;
+}
+
+.preset-buttons {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 8px;
+margin: 15px 0;
+}
+
+.preset-btn {
+padding: 8px;
+border: 1px solid #555;
+border-radius: 6px;
+background: #333;
+color: white;
+font-size: 0.8rem;
+cursor: pointer;
+transition: all 0.1s;
+}
+
+.preset-btn:active {
+background: #4CAF50;
+color: #000;
+}
+
+.action-buttons {
+display: flex;
+justify-content: space-between;
+margin-top: 20px;
+}
+
+.action-btn {
+padding: 10px 20px;
+border: none;
+border-radius: 8px;
+font-size: 1rem;
+cursor: pointer;
+transition: all 0.1s;
+min-width: 80px;
+}
+
+.save-btn {
+background: #4CAF50;
+color: #000;
+}
+
+.cancel-btn {
+background: #666;
+color: #fff;
+}
+
+/* Simple splash */
+#splash {
+position: fixed;
+top: 0; left: 0;
+width: 100%; height: 100%;
+background: #1a1a1a;
+display: flex;
+justify-content: center;
+align-items: center;
+z-index: 9999;
+color: #4CAF50;
+font-size: 2.5rem;
+font-weight: 800;
+opacity: 0;
+animation: fadeInOut 2.5s ease forwards;
+}
+
+@keyframes fadeInOut {
+0% { opacity: 0; }
+40% { opacity: 1; }
+60% { opacity: 1; }
+100% { opacity: 0; visibility: hidden; }
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+.control-btn {
+width: 44px;
+height: 44px;
+font-size: 1.3rem;
+}
+
+.controls {  
+  height: 56px;  
+  width: 180px;  
+}  
+  
+.clock {  
+  font-size: clamp(3.5rem, 15vw, 7rem);  
+}  
+  
+.settings-panel {  
+  width: 300px;  
+  margin: 15px;  
+}  
+  
+.preset-buttons {  
+  grid-template-columns: repeat(2, 1fr);  
+}
+
+}
+
+/* Fast click response */
+.clock:active {
+transform: scale(0.98);
+transition: transform 0.05s;
+}
+
+#player1:active {
+transform: rotate(180deg) scale(0.98);
+}
+</style>
+
+</head>  
+<body>  <!-- Simple Splash -->  <div id="splash">Chess Clock</div>  <!-- Black Player (Top - Rotated) -->  <div id="player1" class="clock inactive">  
+  <div class="player-label">White</div>  
+  <div id="time1">05:00</div>  
+  <div class="move-counter"><span id="moves1">0</span></div>  
+</div>  <!-- Center Control Bar -->  <div class="controls" id="controls">  
+  <button class="control-btn" id="toggle" title="Play/Pause">▶</button>  
+  <button class="control-btn" id="reset" title="Reset">↻</button>  
+  <button class="control-btn" id="settings" title="Settings">⚙</button>  
+</div>  <!-- White Player (Bottom) -->  <div id="player2" class="clock inactive">  
+  <div class="player-label">Black</div>  
+  <div id="time2">05:00</div>  
+  <div class="move-counter"><span id="moves2">0</span></div>  
+</div>  <!-- Compact Settings Panel -->  <div class="overlay" id="overlay">  
+  <div class="settings-panel">  
+    <div class="settings-title">Time Settings</div>  <div class="time-settings">  
+  <!-- Black Settings -->  
+  <div class="player-time">  
+    <h4>Black</h4>  
+    <div class="time-input">  
+      <label>Minutes</label>  
+      <input type="number" id="blackTime" value="5" min="1" max="180">  
+    </div>  
+    <div class="time-input">  
+      <label>Increment</label>  
+      <input type="number" id="blackInc" value="0" min="0" max="60">  
+    </div>  
+  </div>  
+    
+  <!-- White Settings -->  
+  <div class="player-time">  
+    <h4>White</h4>  
+    <div class="time-input">  
+      <label>Minutes</label>  
+      <input type="number" id="whiteTime" value="5" min="1" max="180">  
+    </div>  
+    <div class="time-input">  
+      <label>Increment</label>  
+      <input type="number" id="whiteInc" value="0" min="0" max="60">  
+    </div>  
+  </div>  
+</div>  
+  
+<!-- Presets -->  
+<div style="text-align: center; margin-bottom: 10px; color: #ccc;">Quick Presets</div>  
+<div class="preset-buttons">  
+  <button class="preset-btn" onclick="setPreset(1, 0)">1+0</button>  
+  <button class="preset-btn" onclick="setPreset(3, 0)">3+0</button>  
+  <button class="preset-btn" onclick="setPreset(3, 2)">3+2</button>  
+  <button class="preset-btn" onclick="setPreset(5, 0)">5+0</button>  
+  <button class="preset-btn" onclick="setPreset(10, 0)">10+0</button>  
+  <button class="preset-btn" onclick="setPreset(15, 10)">15+10</button>  
+</div>  
+  
+<!-- Action Buttons -->  
+<div class="action-buttons">  
+  <button class="action-btn cancel-btn" id="cancelBtn">Cancel</button>  
+  <button class="action-btn save-btn" id="saveBtn">Save</button>  
+</div>
+
+  </div>  
+</div>  <!-- Audio with proper 0.5s sound -->  <audio id="moveSound" preload="auto">  
+  <source src="data:audio/wav;base64,UklGRj4CAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YRoCAAC4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4" type="audio/wav">  
+</audio>  <script>  
+// Game state  
+let blackTime = 300, whiteTime = 300;  
+let blackIncrement = 0, whiteIncrement = 0;  
+let activePlayer = null; // 1 = black, 2 = white  
+let timerInterval = null, running = false;  
+let firstMove = true;  
+let blackMoves = 0, whiteMoves = 0;  
+  
+// DOM elements  
+const player1El = document.getElementById('player1'); // Black  
+const player2El = document.getElementById('player2'); // White  
+const time1El = document.getElementById('time1');  
+const time2El = document.getElementById('time2');  
+const moves1El = document.getElementById('moves1');  
+const moves2El = document.getElementById('moves2');  
+const overlay = document.getElementById('overlay');  
+const controlsEl = document.getElementById('controls');  
+const toggleBtn = document.getElementById('toggle');  
+  
+// Format time  
+function formatTime(seconds) {  
+  const mins = Math.floor(seconds / 60);  
+  const secs = seconds % 60;  
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;  
+}  
+  
+// Update display  
+function updateDisplay() {  
+  time1El.textContent = formatTime(blackTime);  
+  time2El.textContent = formatTime(whiteTime);  
+  moves1El.textContent = blackMoves;  
+  moves2El.textContent = whiteMoves;  
+    
+  // Warning for low time  
+  player1El.classList.toggle('warning', blackTime <= 30 && activePlayer === 1);  
+  player2El.classList.toggle('warning', whiteTime <= 30 && activePlayer === 2);  
+}  
+  
+// Play 0.5s sound  
+function playMoveSound() {  
+  const sound = document.getElementById('moveSound');  
+  sound.currentTime = 0;  
+  sound.play().catch(() => {});  
+}  
+  
+// Switch player  
+function switchPlayer() {  
+  if (activePlayer === 1) { // Black to White  
+    blackTime += blackIncrement;  
+    blackMoves++;  
+    activePlayer = 2;  
+    player1El.classList.replace('active', 'inactive');  
+    player2El.classList.replace('inactive', 'active');  
+  } else { // White to Black  
+    whiteTime += whiteIncrement;  
+    whiteMoves++;  
+    activePlayer = 1;  
+    player2El.classList.replace('active', 'inactive');  
+    player1El.classList.replace('inactive', 'active');  
+  }  
+    
+  playMoveSound();  
+  updateDisplay();  
+}  
+  
+// Timer tick  
+function tick() {  
+  if (activePlayer === 1) { // Black's turn  
+    if (blackTime > 0) {  
+      blackTime--;  
+    } else {  
+      endGame('White');  
+    }  
+  } else if (activePlayer === 2) { // White's turn  
+    if (whiteTime > 0) {  
+      whiteTime--;  
+    } else {  
+      endGame('Black');  
+    }  
+  }  
+  updateDisplay();  
+}  
+  
+// End game  
+function endGame(winner) {  
+  clearInterval(timerInterval);  
+  running = false;  
+  toggleBtn.textContent = '▶';  
+  controlsEl.classList.remove('expanded');  
+    
+  setTimeout(() => {  
+    alert(`${winner} wins!`);  
+  }, 100);  
+}  
+  
+// Preset function  
+function setPreset(minutes, increment) {  
+  document.getElementById('blackTime').value = minutes;  
+  document.getElementById('blackInc').value = increment;  
+  document.getElementById('whiteTime').value = minutes;  
+  document.getElementById('whiteInc').value = increment;  
+}  
+  
+// Start/Stop button  
+toggleBtn.addEventListener('click', () => {  
+  if (!running) {  
+    timerInterval = setInterval(tick, 1000);  
+    running = true;  
+    toggleBtn.textContent = '⏸';  
+    controlsEl.classList.add('expanded'); // Expand center bar  
+  } else {  
+    clearInterval(timerInterval);  
+    running = false;  
+    toggleBtn.textContent = '▶';  
+  }  
+});  
+  
+// Reset button  
+document.getElementById('reset').addEventListener('click', () => {  
+  clearInterval(timerInterval);  
+  running = false;  
+  toggleBtn.textContent = '▶';  
+  controlsEl.classList.remove('expanded');  
+    
+  blackTime = parseInt(document.getElementById('blackTime').value) * 60;  
+  whiteTime = parseInt(document.getElementById('whiteTime').value) * 60;  
+  blackIncrement = parseInt(document.getElementById('blackInc').value);  
+  whiteIncrement = parseInt(document.getElementById('whiteInc').value);  
+    
+  blackMoves = whiteMoves = 0;  
+  activePlayer = null;  
+  firstMove = true;  
+    
+  player1El.classList.replace('active', 'inactive');  
+  player2El.classList.replace('active', 'inactive');  
+  player1El.classList.remove('warning');  
+  player2El.classList.remove('warning');  
+    
+  updateDisplay();  
+});  
+  
+// Settings  
+document.getElementById('settings').addEventListener('click', () => {  
+  clearInterval(timerInterval);  
+  running = false;  
+  toggleBtn.textContent = '▶';  
+  controlsEl.classList.remove('expanded');  
+  overlay.style.display = 'flex';  
+});  
+  
+// Save settings  
+document.getElementById('saveBtn').addEventListener('click', () => {  
+  blackTime = parseInt(document.getElementById('blackTime').value) * 60;  
+  whiteTime = parseInt(document.getElementById('whiteTime').value) * 60;  
+  blackIncrement = parseInt(document.getElementById('blackInc').value);  
+  whiteIncrement = parseInt(document.getElementById('whiteInc').value);  
+    
+  blackMoves = whiteMoves = 0;  
+  activePlayer = null;  
+  firstMove = true;  
+    
+  player1El.classList.replace('active', 'inactive');  
+  player2El.classList.replace('active', 'inactive');  
+  player1El.classList.remove('warning');  
+  player2El.classList.remove('warning');  
+    
+  updateDisplay();  
+  overlay.style.display = 'none';  
+});  
+  
+// Cancel settings  
+document.getElementById('cancelBtn').addEventListener('click', () => {  
+  overlay.style.display = 'none';  
+});  
+  
+// Player taps - 0.5s sound  
+function handlePlayerTap(player) {  
+  if (!running) return;  
+    
+  if (firstMove) {  
+    // Auto-assign: Black starts first  
+    activePlayer = 1; // Black starts  
+    player1El.classList.add('active');  
+    player2El.classList.add('inactive');  
+    firstMove = false;  
+    playMoveSound();  
+  } else {  
+    if (activePlayer === player) {  
+      switchPlayer();  
+    }  
+  }  
+}  
+  
+// Touch events  
+player1El.addEventListener('touchstart', (e) => {  
+  e.preventDefault();  
+  handlePlayerTap(1);  
+}, {passive: false});  
+  
+player2El.addEventListener('touchstart', (e) => {  
+  e.preventDefault();  
+  handlePlayerTap(2);  
+}, {passive: false});  
+  
+player1El.addEventListener('click', () => handlePlayerTap(1));  
+player2El.addEventListener('click', () => handlePlayerTap(2));  
+  
+// Spacebar shortcut  
+document.addEventListener('keydown', (e) => {  
+  if (e.code === 'Space') {  
+    e.preventDefault();  
+    toggleBtn.click();  
+  }  
+});  
+  
+// Close overlay on outside click  
+overlay.addEventListener('click', (e) => {  
+  if (e.target === overlay) {  
+    overlay.style.display = 'none';  
+  }  
+});  
+  
+// Initialize  
+updateDisplay();  
+  
+// Remove splash  
+setTimeout(() => {  
+  document.getElementById('splash').remove();  
+}, 2500);  
+</script>  </body>  
 </html>
